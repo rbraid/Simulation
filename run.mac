@@ -1,0 +1,56 @@
+# ----------------
+# Verbose Settings
+# ----------------
+#/control/verbose 2
+#/run/verbose 1
+#/hits/verbose 0
+#/tracking/verbose 2
+
+/control/verbose 0
+/run/verbose 0
+/tracking/verbose 0
+
+# ----------------
+# Visualization Settings
+# ----------------
+# Disable visualization
+/vis/disable
+
+# Use OpenGL Visualization
+#/vis/open OGLIX 1200x900-0+0
+#/vis/open OGLIQt
+#/vis/open DAWNFILE
+
+# Add world volume
+#/vis/drawVolume
+
+#/vis/viewer/set/viewpointThetaPhi 95 15
+
+#/vis/modeling/trajectories/create/drawByParticleID myDraw
+#/vis/modeling/trajectories/myDraw/set alpha magenta
+#/vis/modeling/trajectories/myDraw/set Be12[0.0] cyan
+
+# Add trajectories to the visualization.
+#/vis/scene/add/trajectories
+
+# Add hits to scene
+#/vis/scene/add/hits
+
+# Visualise geometry
+
+# Accumulate multiple events in one picture.
+#/vis/scene/endOfEventAction accumulate -1
+
+#/vis/viewer/flush
+#/vis/viewer/rebuild
+
+# ----------------
+# Beam Characteristics
+# ----------------
+
+# Begin simulation
+/run/beamOn 500000
+#/run/beamOn 1
+
+#exit
+
