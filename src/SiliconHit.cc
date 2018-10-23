@@ -7,6 +7,7 @@
 #include "G4AttValue.hh"
 #include "G4AttDef.hh"
 #include "G4AttCheck.hh"
+#include "/home/ryan/nuclear/mine/Colors.h"
 
 G4Allocator<SiliconHit> SiliconHitAllocator;
 
@@ -65,4 +66,14 @@ std::vector<G4AttValue>* SiliconHit::CreateAttValues() const
 }
 
 void SiliconHit::Print()
-{}
+{
+  std::cout<<"SiliconHit Print()"<<std::endl;
+  std::cout<<"StripX: "<<StripX<<std::endl;
+  std::cout<<"StripY: "<<StripY<<std::endl;
+  std::cout<<"edep: "<<edep<<std::endl;
+//   pos.Print();
+  std::cout<<DRED<<"Pos XYZ: "<<pos.x()<<", "<<pos.y()<<", "<<pos.z()<<RESET_COLOR<<std::endl;
+  std::cout<<DGREEN<<"Pos RThetaPhi: "<<pos.mag()<<", "<<pos.theta()*180./3.14159<<", "<<pos.phi()*180./3.14159<<RESET_COLOR<<std::endl;
+  std::cout<<"ParticleName: "<<ParticleName<<std::endl;
+  std::cout<<"VolumeName: "<<VolumeName<<std::endl;
+}

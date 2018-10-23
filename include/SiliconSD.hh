@@ -7,6 +7,8 @@ class G4Step;
 class G4HCofThisEvent;
 class G4TouchableHistory;
 
+G4ThreeVector GetPosition(int detector,char pos, int horizontalstrip, int verticalstrip, double X=0, double Y=0, double Z=0);
+
 class SiliconSD : public G4VSensitiveDetector
 {
 	public:

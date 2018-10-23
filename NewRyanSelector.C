@@ -263,6 +263,10 @@ if(BeEnergyMath>20 || Be8EnergyMath>20)
     if(Hits[detector]>0)
     {
       EvTheta[detector]->Fill(Theta[detector][0],Energy[detector][0]);
+      cout<<"ThetaArr: "<<Theta[detector][0]<<", PhiArr: "<<Phi[detector][0]<<endl;
+      cout<<"Be Theta: "<<BeThetaMath<<", Phi: "<<BePhiMath<<endl;
+      cout<<"Be8 Theta: "<<Be8ThetaMath<<", Phi: "<<Be8PhiMath<<endl;
+      cout<<endl;
       HitPattern[detector]->Fill(XStrip[detector][0],YStrip[detector][0]);
       if(Hits[detector]>1)
       {

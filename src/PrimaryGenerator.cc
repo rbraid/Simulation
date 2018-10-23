@@ -21,6 +21,7 @@ PrimaryGenerator::PrimaryGenerator( struct DataPass *Be8InfoPass )
     mBe12Energy = &(Be8InfoPass->Be12Energy);
     mBe12Theta = &(Be8InfoPass->Be12Theta);
     mBe12ThetaCOM = &(Be8InfoPass->Be12ThetaCOM);
+//     mBe12PhiCOM = &(Be8InfoPass->Be12PhiCOM);
     mBe12Phi = &(Be8InfoPass->Be12Phi);
     mBe12X = &(Be8InfoPass->Be12X);
     mBe12Y = &(Be8InfoPass->Be12Y);
@@ -62,6 +63,8 @@ PrimaryGenerator::~PrimaryGenerator()
 
 void PrimaryGenerator::GeneratePrimaries(G4Event* event)
 {
+  bool DEBUGPG = 0;
+  if(DEBUGPG) cout<<endl;
     //G4double pi = 4.0*atan(1.0);
 
     //G4double randX = ((G4UniformRand()-0.5)*5.0)*CLHEP::mm;
@@ -149,6 +152,8 @@ void PrimaryGenerator::GeneratePrimaries(G4Event* event)
     particleGun->SetParticleCharge( ioncharge );
     
     particleGun -> GeneratePrimaryVertex(event);
+    
+    if(DEBUGPG) cout<<"PrimaryGenerator 10BeA Theta: "<<theta*180./3.14159<<", Phi: "<<phi*180./3.14159<<endl;
 
     *mA1Energy=E;
     *mA1Theta=theta;
@@ -184,6 +189,8 @@ void PrimaryGenerator::GeneratePrimaries(G4Event* event)
 
     particleGun -> GeneratePrimaryVertex(event);
 
+    if(DEBUGPG) cout<<"PrimaryGenerator 10BeB Theta: "<<theta*180./3.14159<<", Phi: "<<phi*180./3.14159<<endl;
+    
     *mBe12Energy = E;
     *mBe12Theta = theta;
     *mBe12Phi = phi;
@@ -197,7 +204,7 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
 {
 
   bool DEBUGKIN = 0;
-  bool CRAZYDISTS = 0;
+  bool CRAZYDISTS = 1;
   
   G4double *kinematics = new G4double[9];
 
@@ -234,7 +241,7 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
     cerr<<"Error in Excitation Values, Random Value out of range: "<<RandExVal<<", reverting to ground state"<<endl;
     WholeEx = 0.;
     SplitEx = 0.;
-    VelCOMTheta = acos(CLHEP::RandFlat::shoot(-1,1));
+    VelCOMTheta = CLHEP::RandFlat::shoot(0.,1.);
     
   }
   else if(RandExVal < scalegg)
@@ -243,7 +250,7 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
     SplitEx = 0.;
     CLHEP::RandGeneral rgen0(pyramid,nbins);
     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
-    VelCOMTheta *= CLHEP::pi;  
+//     VelCOMTheta *= CLHEP::pi;  
   }
   else if(RandExVal < scalegg + scale3g)
   {
@@ -251,7 +258,7 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
     SplitEx = 0.;
     CLHEP::RandGeneral rgen0(sawtoothInc2,nbins);
     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
-    VelCOMTheta *= CLHEP::pi;  
+//     VelCOMTheta *= CLHEP::pi;  
   }
   else if(RandExVal < scalegg + scale3g + scale6g)
   {
@@ -259,7 +266,7 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
     SplitEx = 0.;
     CLHEP::RandGeneral rgen0(pyramidInv,nbins);
     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
-    VelCOMTheta *= CLHEP::pi;  
+//     VelCOMTheta *= CLHEP::pi;  
   }
   else if(RandExVal < scalegg + scale3g + scale6g + scale33)
   {
@@ -267,15 +274,15 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
     SplitEx = 3.368;
     CLHEP::RandGeneral rgen0(sawtoothDec2,nbins);
     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
-    VelCOMTheta *= CLHEP::pi;  
+//     VelCOMTheta *= CLHEP::pi;  
   }
   else if(RandExVal <= scalegg + scale3g + scale6g + scale33 + scale63)
   {
     WholeEx = CLHEP::RandFlat::shoot(5.958,6.263);
     SplitEx = 3.368;
-    CLHEP::RandGeneral rgen0(pyramid,nbins);
+    CLHEP::RandGeneral rgen0(pyramidInv,nbins);
     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
-    VelCOMTheta *= CLHEP::pi;  
+//     VelCOMTheta *= CLHEP::pi;  
   }
   else if(RandExVal <= scalegg + scale3g + scale6g + scale33 + scale63 + scale66)
   {
@@ -283,20 +290,58 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
     SplitEx = CLHEP::RandFlat::shoot(5.958,6.263);
     CLHEP::RandGeneral rgen0(pyramidInv,nbins);
     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
-    VelCOMTheta *= CLHEP::pi;  
+//     VelCOMTheta *= CLHEP::pi;  
   }
   else if(RandExVal > 100)
   {
     cerr<<"Error in Excitation Values, Random Value out of range: "<<RandExVal<<", reverting to ground state"<<endl;
     WholeEx = 0.;
     SplitEx = 0.;
-    VelCOMTheta = acos(CLHEP::RandFlat::shoot(-1,1));
+    VelCOMTheta = CLHEP::RandFlat::shoot(0.,1.);
   }
+//   VelCOMTheta *= CLHEP::pi;
+  //VelCOMTheta spans 0 to 1 now
+  VelCOMTheta = 2*VelCOMTheta - 1;
+  //VelCOMTheta spans -1 to 1 now
+  VelCOMTheta = acos(VelCOMTheta);//add in phi-compression compensation;
+  
+  if(!CRAZYDISTS)
+    VelCOMTheta = acos(CLHEP::RandFlat::shoot(-1,1));
+  
+  //****************************************
+//   WholeEx = 0.;
+//   SplitEx = 0.;
+//   int dist = 4;
+//   if(dist == 0)
+//     VelCOMTheta = CLHEP::RandFlat::shoot(0.,1.);
+//   
+//   else if(dist ==1)
+//   {
+//     CLHEP::RandGeneral rgen0(pyramidInv,nbins);
+//     VelCOMTheta = rgen0.fire();
+//   }
+//   else if(dist ==2)
+//   {
+//     CLHEP::RandGeneral rgen0(pyramid,nbins);
+//     VelCOMTheta = rgen0.fire();
+//   }
+//   else if(dist ==3)
+//   {
+//     CLHEP::RandGeneral rgen0(sawtoothDec2,nbins);
+//     VelCOMTheta = rgen0.fire();
+//   }
+//   else if(dist ==4)
+//   {
+//     CLHEP::RandGeneral rgen0(sawtoothInc2,nbins);
+//     VelCOMTheta = rgen0.fire();
+//   }  
+//   VelCOMTheta = 2*VelCOMTheta - 1;
+//   
+//   VelCOMTheta = acos(VelCOMTheta);
+  
+  //****************************************
   
   if(DEBUGKIN) cout<<"WholeEx: "<<WholeEx<<", SplitEx: "<<SplitEx<<endl;
-  
-//   WholeEx = 3.368;//CLHEP::RandFlat::shoot(5.958,6.263);
-//   SplitEx = 0;
   
   if(CLHEP::RandFlat::shootBit())
   {
@@ -315,14 +360,11 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
   G4ThreeVector VelWholeCOM;
 
   double VelWholeCOMmag = sqrt((2*(COME+QVal-WholeEx-SplitEx)*MSplit)/(MWhole*(MWhole+MSplit)));
-      
-  if(!CRAZYDISTS)
-    VelCOMTheta = CLHEP::RandFlat::shoot(CLHEP::pi);
   
-  VelWholeCOM.setRThetaPhi( VelWholeCOMmag, VelCOMTheta,CLHEP::RandFlat::shoot(CLHEP::twopi));
+  double VelCOMPhi = CLHEP::RandFlat::shoot(CLHEP::twopi);
   
-  *mBe12ThetaCOM = VelCOMTheta;
-  
+  VelWholeCOM.setRThetaPhi( VelWholeCOMmag, VelCOMTheta, VelCOMPhi);
+    
   G4ThreeVector VelSplitCOM = -MWhole/MSplit*VelWholeCOM;
 
   if(DEBUGKIN) cout<<"Whole COM info:"<<endl;
@@ -355,6 +397,7 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
   *mBe8X = VelSplit.x();
   *mBe8Y = VelSplit.y();
   *mBe8Z = VelSplit.z();
+  *mBe12ThetaCOM = VelCOMTheta;
   
   *mBe12ExciteE = WholeEx;
   *mBe8ExciteE = SplitEx;
@@ -366,6 +409,29 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
   kinematics[0] = .5*MSplit*VelSplit.mag2();
   kinematics[1] = VelSplit.theta();
   kinematics[2] = VelSplit.phi();
+  
+//   if(kinematics[0] < kinematics[3]) // This code makes it so the first particle is the higher energy particle.  This should not be in production!
+//   {
+//     kinematics[0] = .5*MWhole*VelWhole.mag2();
+//     kinematics[1] = VelWhole.theta();
+//     kinematics[2] = VelWhole.phi();
+//     
+//     kinematics[3] = .5*MSplit*VelSplit.mag2();
+//     kinematics[4] = VelSplit.theta();
+//     kinematics[5] = VelSplit.phi();
+//     
+//     *mBe8Energy = .5*MWhole*VelWhole.mag2();
+//     *mBe8Theta = VelWhole.theta();
+//     *mBe8ThetaCOM = VelWholeCOM.theta();
+//     *mBe8Phi = VelWhole.phi();
+//     *mBe8X = VelWhole.x();
+//     *mBe8Y = VelWhole.y();
+//     *mBe8Z = VelWhole.z();
+//     //*mBe12ThetaCOM = VelCOMTheta;
+//     
+//     *mBe12ExciteE = SplitEx;
+//     *mBe8ExciteE = WholeEx;
+//   }
 
   
   return kinematics;

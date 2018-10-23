@@ -10,8 +10,10 @@
 #include "G4ios.hh"
 #include "Randomize.hh"
 #include <cmath>
-#include "/home/ryan/nuclear/be9/summed/angleheader.h"
+// #include "/home/ryan/nuclear/be9/summed/angleheader.h"
 #include <algorithm>
+#include "/home/ryan/nuclear/mine/Colors.h"
+
 
 EventAction::EventAction( struct DataPass *Be8InfoPass )
 {
@@ -114,8 +116,13 @@ void EventAction::EndOfEventAction(const G4Event* evt)
         mDetectorY[i] = Position.getY();
         mDetectorZ[i] = Position.getZ();
         
-        mTheta[i] = thetaarray[mDetectorID[i]][StripY[i]][StripX[i]];
-        mPhi[i] = phiarray[mDetectorID[i]][StripY[i]][StripX[i]];
+//         mTheta[i] = thetaarray[mDetectorID[i]][StripY[i]][StripX[i]];
+//         mPhi[i] = phiarray[mDetectorID[i]][StripY[i]][StripX[i]];
+        
+        bool DEBUG = 0;
+        
+        if(DEBUG) std::cout<<DGREEN<<"EventAction Theta: "<<Position.theta()*180./3.14159<<", Phi: "<<Position.phi()*180./3.14159<<RESET_COLOR<<std::endl;
+//         if(DEBUG) std::cout<<DYELLOW<<"Header Theta: "<<mTheta[i]<<", Phi: "<<mPhi[i]<<RESET_COLOR<<std::endl;
         
         mEnergyDep[i] = (SiHits->at(i)->GetEdep());
         if(BLURRING)
@@ -202,11 +209,11 @@ void EventAction::EndOfEventAction(const G4Event* evt)
     Alpha1PhiMath = Be8Data->A1Phi*180./pi;
     Alpha2PhiMath = Be8Data->A2Phi*180./pi;
     
-    if(abort)
-    {
-      mResetParameters();
-      //cout<<".";      
-    }
+//     if(abort)
+//     {
+//       mResetParameters();
+//       //cout<<".";      
+//     }
     
     mReconDataTree->Fill();
     RyanTree->Fill();

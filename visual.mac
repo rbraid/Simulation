@@ -49,7 +49,7 @@
 # ----------------
 
 # Begin simulation
-#/run/beamOn 5000
-/run/beamOn 5
+#/run/beamOn 500
+/run/beamOn 500
 
 

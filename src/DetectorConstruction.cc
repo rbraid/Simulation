@@ -236,31 +236,45 @@ void DetectorConstruction::MakeDSSDNew(int detector, char pos)
   StripLogical = new G4LogicalVolume(DSSDStrip,materials->Silicon,"StripLogical");
   PixelLogical = new G4LogicalVolume(DSSDPixel,materials->Silicon,"PixelLogical");
   
+  // 	MakeDSSD(40*um,65.13*mm,-31, 3);//de
+  //   void DetectorConstruction::MakeDSSD(G4double DetZ, G4double PosR, G4double PosTheta, G4int Type)
+//   G4double DetZ = 40*um;
+//   G4double PosR = 65.13*mm;
+//   G4double PosTheta = -31;
+//   G4double PosRad = -31.*pi/180;
+//   G4double DetX = 50.*mm;
+//   G4double DetY = 50.*mm;
 //   G4ThreeVector *Pos3 = new G4ThreeVector((PosR+DetZ/2.)*sin(PosRad),0.,(PosR+DetZ/2.)*cos(PosRad)); //Points to the center of the detector.
 //   G4RotationMatrix RMx; //this is the angle it is rotated relative to the target.
   
-  G4ThreeVector CenterOfDet = (GetPositionsNew(detector,pos,7,7)[4] + GetPositionsNew(detector,pos,7,8)[4] + GetPositionsNew(detector,pos,8,7)[4] +GetPositionsNew(detector,pos,8,8)[4])/4.;
-  //G4ThreeVector CenterOfDet = (GetPosition(detector,pos,7,7) + GetPosition(detector,pos,7,8) + GetPosition(detector,pos,8,7) +GetPosition(detector,pos,8,8))/4.;
+  G4ThreeVector CenterOfDetNew = (GetPositionsNew(detector,pos,7,7)[4] + GetPositionsNew(detector,pos,7,8)[4] + GetPositionsNew(detector,pos,8,7)[4] +GetPositionsNew(detector,pos,8,8)[4])/4.;
+  G4ThreeVector CenterOfDet = (GetPosition(detector,pos,7,7) + GetPosition(detector,pos,7,8) + GetPosition(detector,pos,8,7) +GetPosition(detector,pos,8,8))/4.;
   
-//   if(pos=='D')
-//   {
-//     G4double PosRad = 31*pi/180;
-//     G4double DetX = 50.*mm;
-//     G4double DetY = 50.*mm;
-//     G4double DetZ = 40.*um;
-//     
-//     G4double PosR = 65.13*mm;
-//     
-//     G4ThreeVector *Pos3 = new G4ThreeVector((PosR+DetZ/2.)*sin(PosRad),0.,(PosR+DetZ/2.)*cos(PosRad));
-//     cout<<"Debugging Positions for dE, x, y, z:"<<endl;
-//     cout<<"Old Position: "<<Pos3->x()<<", "<<Pos3->y()<<", "<<Pos3->z()<<endl;
-//     
-//     cout<<"New Position: "<<CenterOfDet.x()<<", "<<CenterOfDet.y()<<", "<<CenterOfDet.z()<<endl;
-//   }
+  
+  cout<<"Position Checks for "<<Name<<endl;
+//   cout<<" Ancient XYZ: "<<Pos3->getX()<<", "<<Pos3->getY()<<", "<<Pos3->getZ()<<endl;
+  cout<<" Old XYZ: "<<CenterOfDet.getX()<<", "<<CenterOfDet.getY()<<", "<<CenterOfDet.getZ()<<endl;
+  cout<<" New XYZ: "<<CenterOfDetNew.getX()<<", "<<CenterOfDetNew.getY()<<", "<<CenterOfDetNew.getZ()<<endl;
+  
+//   cout<<" Ancient Theta,Phi,R: "<<Pos3->getTheta()<<", "<<Pos3->getPhi()<<", "<<Pos3->getR()<<endl;
+  cout<<" Old Theta,Phi,R: "<<CenterOfDet.getTheta()*180./3.14159<<", "<<CenterOfDet.getPhi()*180./3.14159<<", "<<CenterOfDet.getR()<<endl;
+  cout<<" New Theta,Phi,R: "<<CenterOfDetNew.getTheta()*180./3.14159<<", "<<CenterOfDetNew.getPhi()*180./3.14159<<", "<<CenterOfDetNew.getR()<<endl;
   
   G4RotationMatrix RMx;
   RMx.rotateY(detTheta);
   
+//   RMx.Print();
+//   
+//   G4Transform3D(RMx,CenterOfDet);
+//   G4Transform3D(RMx,CenterOfDetNew);
+//   cout<<"Position Checks after rotation for "<<Name<<endl;
+//   //   cout<<" Ancient XYZ: "<<Pos3->getX()<<", "<<Pos3->getY()<<", "<<Pos3->getZ()<<endl;
+//   cout<<" Old XYZ: "<<CenterOfDet.getX()<<", "<<CenterOfDet.getY()<<", "<<CenterOfDet.getZ()<<endl;
+//   cout<<" New XYZ: "<<CenterOfDetNew.getX()<<", "<<CenterOfDetNew.getY()<<", "<<CenterOfDetNew.getZ()<<endl;
+//   
+//   //   cout<<" Ancient Theta,Phi,R: "<<Pos3->getTheta()<<", "<<Pos3->getPhi()<<", "<<Pos3->getR()<<endl;
+//   cout<<" Old Theta,Phi,R: "<<CenterOfDet.getTheta()<<", "<<CenterOfDet.getPhi()<<", "<<CenterOfDet.getR()<<endl;
+//   cout<<" New Theta,Phi,R: "<<CenterOfDetNew.getTheta()<<", "<<CenterOfDetNew.getPhi()<<", "<<CenterOfDetNew.getR()<<endl;
   G4PVPlacement *PhysicalDSSD;
   PhysicalDSSD = new G4PVPlacement(G4Transform3D(RMx,CenterOfDet),BoxLogical,"PhysicalDSSD",expHallLogical,false,1);
   G4PVDivision *PhysicalStrip;
@@ -299,6 +313,8 @@ G4ThreeVector DetectorConstruction::GetPosition(int detector,char pos, int horiz
 {
   //horizontal strips collect N charge!
   //vertical strips collect P charge!
+  horizontalstrip -=1;
+  
   G4ThreeVector Pos;
   double detTheta = -31. * (CLHEP::pi/180.);
   double SideX = 64.62;
@@ -306,6 +322,11 @@ G4ThreeVector DetectorConstruction::GetPosition(int detector,char pos, int horiz
   double dER = 62.14;
   double ER = 75.35;
   double x = 0.0,y = 0.0,z = 0.0;
+  
+  pos = toupper(pos);
+  
+  if(pos != 'D' && pos != 'E')
+    std::cerr<<"Unrecognized pos: "<<pos<<std::endl;
   
   if(detector == 1)
     detTheta = -detTheta;
@@ -341,8 +362,11 @@ G4ThreeVector DetectorConstruction::GetPosition(int detector,char pos, int horiz
   Pos.setY(y + Y);
   Pos.setZ(zp+ Z);
   
-  Pos.setX(Pos.getX()*1.15);
-  Pos.setZ(Pos.getZ()*1.15);
+//   Pos.setX(Pos.getX()*1.15);
+//   Pos.setZ(Pos.getZ()*1.15);
+  
+  Pos.setPhi(Pos.getPhi() + CLHEP::pi);
+  Pos.setY(0);
   
   return(Pos);
 }

@@ -59,6 +59,7 @@ private:
     G4double	mBe12Energy;
     G4double	mBe12Theta;
     G4double	mBe12ThetaCOM;
+    G4double    mBe12PhiCOM;
     G4double	mBe12Phi;
     G4double	mBe12X[2];
     G4double	mBe12Y[2];
