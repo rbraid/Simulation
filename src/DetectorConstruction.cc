@@ -250,6 +250,10 @@ void DetectorConstruction::MakeDSSDNew(int detector, char pos)
   G4ThreeVector CenterOfDetNew = (GetPositionsNew(detector,pos,7,7)[4] + GetPositionsNew(detector,pos,7,8)[4] + GetPositionsNew(detector,pos,8,7)[4] +GetPositionsNew(detector,pos,8,8)[4])/4.;
   G4ThreeVector CenterOfDet = (GetPosition(detector,pos,7,7) + GetPosition(detector,pos,7,8) + GetPosition(detector,pos,8,7) +GetPosition(detector,pos,8,8))/4.;
   
+//   G4double factor = 1.5;
+//   CenterOfDet.setX(CenterOfDet.x()*factor);
+//   CenterOfDet.setZ(CenterOfDet.z()*factor);
+  
   
   cout<<"Position Checks for "<<Name<<endl;
 //   cout<<" Ancient XYZ: "<<Pos3->getX()<<", "<<Pos3->getY()<<", "<<Pos3->getZ()<<endl;
