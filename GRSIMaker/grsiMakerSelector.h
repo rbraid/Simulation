@@ -30,6 +30,8 @@ TFile *OutputFile;
 
 TTree *AnalysisTree;
 
+TCSM *csm;
+
 class grsiMakerSelector : public TSelector {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -94,7 +96,7 @@ public :
    virtual void    SlaveTerminate();
    virtual void    Terminate();
 
-   ClassDef(grsiMakerSelector,0);
+   ClassDef(grsiMakerSelector,1);
 };
 
 #endif
