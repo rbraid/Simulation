@@ -64,6 +64,8 @@ PrimaryGenerator::~PrimaryGenerator()
 void PrimaryGenerator::GeneratePrimaries(G4Event* event)
 {
   bool DEBUGPG = 0;
+  bool FLATDIST = 0;
+  bool ELASTIC = 1;
   if(DEBUGPG) cout<<endl;
     //G4double pi = 4.0*atan(1.0);
 
@@ -90,6 +92,12 @@ void PrimaryGenerator::GeneratePrimaries(G4Event* event)
     double x,y,z;
     double E, theta, phi;
     G4double *kinematics = mCalcLightProdKinematics();
+    
+    if (FLATDIST)
+      kinematics = mCalcTestKinematics();
+    
+    if (ELASTIC)
+      kinematics = mCalcElasticKinematics();
 
 //      cout<<"KINEMATICS OUTPUT:"<<endl;
 //      cout<<kinematics[0]<<endl;
@@ -143,6 +151,8 @@ void PrimaryGenerator::GeneratePrimaries(G4Event* event)
     particleGun -> SetParticleMomentumDirection(PVecDirection);
 
     G4int Z = 4, A = 10;
+    if(ELASTIC)
+      A = 9;
     G4double ioncharge = 0.0*CLHEP::eplus;
     G4double excitEnergy = 0.*CLHEP::keV;
 
@@ -151,13 +161,13 @@ void PrimaryGenerator::GeneratePrimaries(G4Event* event)
     particleGun->SetParticleDefinition( ion );
     particleGun->SetParticleCharge( ioncharge );
     
-    particleGun -> GeneratePrimaryVertex(event);
+//     particleGun -> GeneratePrimaryVertex(event);
     
     if(DEBUGPG) cout<<"PrimaryGenerator 10BeA Theta: "<<theta*180./3.14159<<", Phi: "<<phi*180./3.14159<<endl;
 
-    *mA1Energy=E;
-    *mA1Theta=theta;
-    *mA1Phi=phi;
+//     *mA1Energy=E;
+//     *mA1Theta=theta;
+//     *mA1Phi=phi;
     //*mA1X=x;
     //*mA1Y=y;
     //*mA1Z=z;
@@ -179,6 +189,8 @@ void PrimaryGenerator::GeneratePrimaries(G4Event* event)
     //Create the 12Be beam ion
     Z = 4;
     A = 10;
+    if(ELASTIC)
+      A = 11;
     ioncharge = 0.0*CLHEP::eplus;
     excitEnergy = 0.*CLHEP::keV;
 
@@ -187,13 +199,14 @@ void PrimaryGenerator::GeneratePrimaries(G4Event* event)
     particleGun->SetParticleDefinition( ion );
     particleGun->SetParticleCharge( ioncharge );
 
+    if(!FLATDIST)
     particleGun -> GeneratePrimaryVertex(event);
 
     if(DEBUGPG) cout<<"PrimaryGenerator 10BeB Theta: "<<theta*180./3.14159<<", Phi: "<<phi*180./3.14159<<endl;
     
-    *mBe12Energy = E;
-    *mBe12Theta = theta;
-    *mBe12Phi = phi;
+//     *mBe12Energy = E;
+//     *mBe12Theta = theta;
+//     *mBe12Phi = phi;
     //*mBe12X = x;
     //*mBe12Y = y;
     //*mBe12Z = z;
@@ -204,7 +217,8 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
 {
 
   bool DEBUGKIN = 0;
-  bool CRAZYDISTS = 1;
+  bool CRAZYDISTS = 0;
+  bool FLATEX = 1;
   
   G4double *kinematics = new G4double[9];
 
@@ -219,7 +233,7 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
   double QVal = MBeam + MTarget - MWhole - MSplit;
   if(DEBUGKIN) cout<<"QVal: "<<QVal<<" NNDC Ref: 6.310"<<endl;
   
-  const int nbins(360);
+  const int nbins(720);
   
   double scalegg = 0.00345167* 100.;
   double scale3g = 0.0145617 * 100.;
@@ -227,6 +241,16 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
   double scale33 = 0.156889  * 100.;
   double scale63 = 0.30612   * 100.;
   double scale66 = 0.362089  * 100.;
+  
+  if(FLATEX)
+  {
+    scalegg = 1./6.* 100.;
+    scale3g = 1./6.* 100.;
+    scale6g = 1./6.* 100.;
+    scale33 = 1./6.* 100.;
+    scale63 = 1./6.* 100.;
+    scale66 = 1./6.* 100.;
+  }
   
 
   double WholeEx = -1000.;
@@ -248,7 +272,7 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
   {
     WholeEx = 0.;
     SplitEx = 0.;
-    CLHEP::RandGeneral rgen0(pyramid,nbins);
+    CLHEP::RandGeneral rgen0(distB,nbins);
     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
 //     VelCOMTheta *= CLHEP::pi;  
   }
@@ -256,23 +280,23 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
   {
     WholeEx = 3.368;
     SplitEx = 0.;
-    CLHEP::RandGeneral rgen0(sawtoothInc2,nbins);
+    CLHEP::RandGeneral rgen0(distB,nbins);
     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
 //     VelCOMTheta *= CLHEP::pi;  
   }
-  else if(RandExVal < scalegg + scale3g + scale6g)
-  {
-    WholeEx = CLHEP::RandFlat::shoot(5.958,6.263);
-    SplitEx = 0.;
-    CLHEP::RandGeneral rgen0(pyramidInv,nbins);
-    VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
-//     VelCOMTheta *= CLHEP::pi;  
-  }
+//   else if(RandExVal < scalegg + scale3g + scale6g)
+//   {
+//     WholeEx = CLHEP::RandFlat::shoot(5.958,6.263);
+//     SplitEx = 0.;
+//     CLHEP::RandGeneral rgen0(distB,nbins);
+//     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
+// //     VelCOMTheta *= CLHEP::pi;  
+//   }
   else if(RandExVal < scalegg + scale3g + scale6g + scale33)
   {
     WholeEx = 3.368;
     SplitEx = 3.368;
-    CLHEP::RandGeneral rgen0(sawtoothDec2,nbins);
+    CLHEP::RandGeneral rgen0(distB,nbins);
     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
 //     VelCOMTheta *= CLHEP::pi;  
   }
@@ -280,7 +304,7 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
   {
     WholeEx = CLHEP::RandFlat::shoot(5.958,6.263);
     SplitEx = 3.368;
-    CLHEP::RandGeneral rgen0(pyramidInv,nbins);
+    CLHEP::RandGeneral rgen0(distB,nbins);
     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
 //     VelCOMTheta *= CLHEP::pi;  
   }
@@ -288,7 +312,7 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
   {
     WholeEx = CLHEP::RandFlat::shoot(5.958,6.263);
     SplitEx = CLHEP::RandFlat::shoot(5.958,6.263);
-    CLHEP::RandGeneral rgen0(pyramidInv,nbins);
+    CLHEP::RandGeneral rgen0(distB,nbins);
     VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
 //     VelCOMTheta *= CLHEP::pi;  
   }
@@ -301,45 +325,17 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
   }
 //   VelCOMTheta *= CLHEP::pi;
   //VelCOMTheta spans 0 to 1 now
-  VelCOMTheta = 2*VelCOMTheta - 1;
+//   VelCOMTheta = 2*VelCOMTheta - 1;
   //VelCOMTheta spans -1 to 1 now
   VelCOMTheta = acos(VelCOMTheta);//add in phi-compression compensation;
   
   if(!CRAZYDISTS)
     VelCOMTheta = acos(CLHEP::RandFlat::shoot(-1,1));
-  
-  //****************************************
-//   WholeEx = 0.;
-//   SplitEx = 0.;
-//   int dist = 4;
-//   if(dist == 0)
-//     VelCOMTheta = CLHEP::RandFlat::shoot(0.,1.);
-//   
-//   else if(dist ==1)
-//   {
-//     CLHEP::RandGeneral rgen0(pyramidInv,nbins);
-//     VelCOMTheta = rgen0.fire();
-//   }
-//   else if(dist ==2)
-//   {
-//     CLHEP::RandGeneral rgen0(pyramid,nbins);
-//     VelCOMTheta = rgen0.fire();
-//   }
-//   else if(dist ==3)
-//   {
-//     CLHEP::RandGeneral rgen0(sawtoothDec2,nbins);
-//     VelCOMTheta = rgen0.fire();
-//   }
-//   else if(dist ==4)
-//   {
-//     CLHEP::RandGeneral rgen0(sawtoothInc2,nbins);
-//     VelCOMTheta = rgen0.fire();
-//   }  
-//   VelCOMTheta = 2*VelCOMTheta - 1;
-//   
+
+//   VelCOMTheta = -100;
+//   while(VelCOMTheta > 1 || VelCOMTheta < -1)
+//     VelCOMTheta = CLHEP::RandGauss::shoot(0.,.5);
 //   VelCOMTheta = acos(VelCOMTheta);
-  
-  //****************************************
   
   if(DEBUGKIN) cout<<"WholeEx: "<<WholeEx<<", SplitEx: "<<SplitEx<<endl;
   
@@ -349,6 +345,9 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
     WholeEx = SplitEx;
     SplitEx = temp;
   }
+  
+//   WholeEx = 3.368;
+//   SplitEx = 3.368;
 
   if(DEBUGKIN) cout<<"WholeEx: "<<WholeEx<<endl;
 
@@ -390,17 +389,18 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
   if(DEBUGKIN) cout<<"Sum Lab Energy: "<<(.5*MWhole*VelWhole.mag2()+.5*MSplit*VelSplit.mag2())<<endl;
   if(DEBUGKIN) cout<<endl;
 
-  *mBe8Energy = .5*MSplit*VelSplit.mag2();
-  *mBe8Theta = VelSplit.theta();
-  *mBe8ThetaCOM = VelSplitCOM.theta();
-  *mBe8Phi = VelSplit.phi();
-  *mBe8X = VelSplit.x();
-  *mBe8Y = VelSplit.y();
-  *mBe8Z = VelSplit.z();
-  *mBe12ThetaCOM = VelCOMTheta;
-  
   *mBe12ExciteE = WholeEx;
   *mBe8ExciteE = SplitEx;
+  
+  *mBe8Energy = .5*MSplit*VelSplit.mag2();
+  *mBe8Theta = VelSplit.theta();
+  *mBe8Phi = VelSplit.phi();
+  *mBe8ThetaCOM = VelSplitCOM.theta();
+  
+  *mBe12Energy = .5*MWhole*VelWhole.mag2();;
+  *mBe12Theta = VelWhole.theta();
+  *mBe12Phi = VelWhole.phi();
+  *mBe12ThetaCOM = VelWholeCOM.theta();
 
   kinematics[3] = .5*MWhole*VelWhole.mag2();
   kinematics[4] = VelWhole.theta();
@@ -434,5 +434,121 @@ G4double *PrimaryGenerator::mCalcLightProdKinematics()
 //   }
 
   
+  return kinematics;
+}
+
+G4double *PrimaryGenerator::mCalcTestKinematics()
+{
+  G4double *kinematics = new G4double[9];
+  
+  *mBe8Energy = 0;
+  *mBe8Theta = 0;
+  *mBe8ThetaCOM = 0;
+  *mBe8Phi = 0;
+  *mBe8X = 0;
+  *mBe8Y = 0;
+  *mBe8Z = 0;
+  *mBe12ThetaCOM = 0;
+  
+  *mBe12ExciteE = 0;
+  *mBe8ExciteE = 0;
+  
+  double Theta = acos(CLHEP::RandFlat::shoot(-1,1));
+  double Phi = CLHEP::RandFlat::shoot(CLHEP::twopi);
+  
+  G4ThreeVector FlatDist;
+  FlatDist.setRThetaPhi( 1000, Theta, Phi);
+  
+  
+  kinematics[3] = 0;
+  kinematics[4] = 0;
+  kinematics[5] = 0;
+  
+  kinematics[0] = FlatDist.mag2();
+  kinematics[1] = FlatDist.theta();
+  kinematics[2] = FlatDist.phi();  
+  
+  return kinematics;
+}
+
+G4double *PrimaryGenerator::mCalcElasticKinematics()
+{
+  
+  bool DEBUGKIN = 0;
+  
+  G4double *kinematics = new G4double[9];
+  
+  double MBeam = MASS_BE11;
+  double EBeam = BEAM_ENERGY;
+  
+  double MTarget = MASS_BE9;
+  
+  double MHeavy = MASS_BE11;
+  double MLight = MASS_BE9;
+  
+  double QVal = MBeam + MTarget - MHeavy - MLight;
+  
+  const int nbins(720);
+  
+  double HeavyEx = 0.;
+  double LightEx = 0.;
+  
+  if(CLHEP::RandFlat::shootBit())
+  {
+    LightEx = 2.429;
+  }
+
+//   double VelCOMTheta = acos(CLHEP::RandFlat::shoot(-1,1));
+//   CLHEP::RandGeneral rgen0(distC,nbins);
+//   double VelCOMTheta = rgen0.fire(); //right now i span 0 to 1
+//   VelCOMTheta = 2*VelCOMTheta - 1;
+//   VelCOMTheta = acos(VelCOMTheta);
+  
+    double VelCOMTheta = -100;
+    while(VelCOMTheta > 1 || VelCOMTheta < -1)
+      VelCOMTheta = CLHEP::RandGauss::shoot(0.,.5);
+    VelCOMTheta = acos(VelCOMTheta);
+  
+  G4ThreeVector COMVel(0.,0.,(MBeam)/(MBeam+MTarget)*sqrt(2.*EBeam/MBeam));
+  double COME = MTarget/(MBeam + MTarget)*EBeam;
+  
+  G4ThreeVector VelHeavyCOM;
+  
+  double VelHeavyCOMmag = sqrt((2*(COME+QVal-HeavyEx-LightEx)*MLight)/(MHeavy*(MHeavy+MLight)));
+  
+  double VelCOMPhi = CLHEP::RandFlat::shoot(CLHEP::twopi);
+  
+  VelHeavyCOM.setRThetaPhi( VelHeavyCOMmag, VelCOMTheta, VelCOMPhi);
+  
+  G4ThreeVector VelLightCOM = -MHeavy/MLight*VelHeavyCOM;
+  
+  G4ThreeVector VelHeavy = VelHeavyCOM + COMVel;
+  G4ThreeVector VelLight = VelLightCOM + COMVel;
+
+//   *mBe8X = VelLight.x();
+//   *mBe8Y = VelLight.y();
+//   *mBe8Z = VelLight.z();
+  
+  *mBe12ExciteE = HeavyEx;
+  *mBe8ExciteE = LightEx;
+  
+  *mBe8Energy = .5*MLight*VelLight.mag2();
+  *mBe8Theta = VelLight.theta();
+  *mBe8Phi = VelLight.phi();
+  *mBe8ThetaCOM = VelLightCOM.theta();
+  
+  *mBe12Energy = .5*MHeavy*VelHeavy.mag2();;
+  *mBe12Theta = VelHeavy.theta();
+  *mBe12Phi = VelHeavy.phi();
+  *mBe12ThetaCOM = VelHeavyCOM.theta();
+
+  kinematics[3] = .5*MHeavy*VelHeavy.mag2();
+  kinematics[4] = VelHeavy.theta();
+  kinematics[5] = VelHeavy.phi();
+  
+  kinematics[0] = .5*MLight*VelLight.mag2();
+  kinematics[1] = VelLight.theta();
+  kinematics[2] = VelLight.phi();
+
   return kinematics;
 }
