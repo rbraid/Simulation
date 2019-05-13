@@ -60,53 +60,32 @@ G4bool SiliconSD::ProcessHits( G4Step *step, G4TouchableHistory* )
         
     if( !(strncmp("E", volumeName,1))) 
     {
-      newHit->SetStripX(15-momcopyNo);
-      newHit->SetStripY(15-copyNo);
+//       newHit->SetStripX(15-momcopyNo);
+//       newHit->SetStripY(15-copyNo);
     }
 	newHit->SetEdep( edep );
 	newHit->SetPos( step->GetPreStepPoint()->GetPosition() );
  
 	newHit->SetParticleName( particleName );
 	newHit->SetVolumeName( volumeName );
-//     newHit->Print();
+
 	siliconCollection->insert( newHit );
 //     std::cout<<"newHit->GetVolumeName(): "<<newHit->GetVolumeName()<<std::endl;
 //     if(newHit->GetVolumeName().contains('R'))
 //       std::cout<<"R"<<std::endl;
     
-    int det = 2;
-    if(newHit->GetVolumeName().contains('R'))
-      det = 1;
+//     int det = 2;
+//     if(newHit->GetVolumeName().contains('R'))
+//       det = 1;
+//     
+//     char type = 'E';
+//     if(newHit->GetVolumeName().contains('d'))
+//       type = 'D';
+//     
+//     bool side = 0;
+//     if(newHit->GetVolumeName().contains('S'))
+//       side = 1;
     
-    char type = 'E';
-    if(newHit->GetVolumeName().contains('d'))
-      type = 'D';
-    
-    bool side = 0;
-    if(newHit->GetVolumeName().contains('S'))
-      side = 1;
-    
-    if(DEBUG && newHit->GetStripX() == 1 && newHit->GetStripY() == 1 && det == 1 && !side && type == 'D') 
-    {
-//       std::cout<<DGREEN<<"PreStepPoint->GetPosition() Theta: "<<step->GetPreStepPoint()->GetPosition().theta()*180./3.14159
-//       <<", Phi: "<<step->GetPreStepPoint()->GetPosition().phi()*180./3.14159<<RESET_COLOR<<std::endl;
-//       
-//       std::cout<<DRED<<"PreStepPoint->GetPosition() X: "<<step->GetPreStepPoint()->GetPosition().x()<<", Y: "<<step->GetPreStepPoint()->GetPosition().y()<<", Z: "<<step->GetPreStepPoint()->GetPosition().z()<<RESET_COLOR<<std::endl; 
-      
-//       std::cout<<"Strip X: "<<newHit->GetStripX()<<", Y: "<<newHit->GetStripY()<<std::endl;
-//       int *strips =  GetStrips(step->GetPreStepPoint()->GetPosition().theta(),step->GetPreStepPoint()->GetPosition().phi())
-      
-      newHit->Print();
-      
-      G4ThreeVector tmppos = GetPosition(det, type, newHit->GetStripX(), newHit->GetStripY());
-      std::cout<<RED<<"tmppos X: "<<tmppos.x()<<", Y: "<<tmppos.y()<<", Z: "<<tmppos.z()<<RESET_COLOR<<std::endl;
-      std::cout<<GREEN<<"tmppos Theta: "<<tmppos.theta()*180./3.14159<<", Phi: "<<tmppos.phi()*180./3.14159<<RESET_COLOR<<std::endl;
-      
-      cout<<"Angle between tmppos and PreStepPoint(): "<<tmppos.angle(step->GetPreStepPoint()->GetPosition())*180./3.14159<<endl;
-      
-  //     std::cout<<"newHit->GetVolumeName().last(): "<<newHit->GetVolumeName().last()<<std::endl;
-      std::cout<<std::endl;
-    }
 	return true;
 }
 
