@@ -214,7 +214,6 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 //       mResetParameters();
 //       //cout<<".";      
 //     }
-    
     mReconDataTree->Fill();
     RyanTree->Fill();
     
@@ -224,7 +223,7 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 
 G4double EventAction::blur()
 {
-  G4double blurval = G4RandGauss::shoot(0.0,75.);
+  G4double blurval = G4RandGauss::shoot(0.0,50.);
   return(blurval);
 }
 
