@@ -60,6 +60,8 @@ void SetHistos()
         
         outlist->Add(new TH1D(Form("RingCounts_s%02i_d%i_%s",state,det,dettype.Data()),Form("RingCounts_s%02i_d%i_%s",state,det,dettype.Data()),200,0,200));
         outlist->Add(new TH2D(Form("HitPattern_s%02i_d%i_%s",state,det,dettype.Data()),Form("HitPattern for detector %i, state %i, %s",det,state,dettype.Data()),16,0,16,16,0,16));
+//         outlist->Add(new TH2D(Form("PunchThrough_s%02i_d%i_%s",state,det,dettype.Data()),Form("PunchThrough for detector %i, state %i, %s",det,state,dettype.Data()),16,0,16,16,0,16));
+        
         outlist->Add(new TH2D(Form("RingVThetaCOM_s%02i_d%i_%s",state,det,dettype.Data()),Form("RingVThetaCOM state %i, detector %i %s",state,det,dettype.Data()),180,0,180,200,0,200));
         outlist->Add(new TH2D(Form("RingVThetaLab_s%02i_d%i_%s",state,det,dettype.Data()),Form("RingVThetaLab state %i, detector %i %s",state,det,dettype.Data()),180,0,180,200,0,200));
         outlist->Add(new TH2D(Form("EvTheta_s%02i_d%i_%s",state,det,dettype.Data()),Form("EvTheta_s%02i_d%i_pid_%s",state,det,dettype.Data()),90,0,90,45,0,45));
@@ -70,16 +72,16 @@ void SetHistos()
       }
     }
   }
-  outlist->Add(new TH1D("COMThetaAll","COMThetaAll",720,-360,360));
-  outlist->Add(new TH1D("COMThetaAll_convert","COMThetaAll_convert",720,-360,360));
-  
-  outlist->Add(new TH1D("COMThetaHit","COMThetaHit",720,-360,360));
-  outlist->Add(new TH1D("COMThetaHit_loop","COMThetaHit_loop",720,-360,360));
-  outlist->Add(new TH1D("COMThetaHit_vec","COMThetaHit_vec",720,-360,360));
-  
-  outlist->Add(new TH1D("COMThetaHit_frac","COMThetaHit_frac",720,-360,360));
-  outlist->Add(new TH1D("COMThetaHit_solid","COMThetaHit_solid",720,-360,360));
-  outlist->Add(new TH1D("COMThetaHit_frac_solid","COMThetaHit_frac_solid",720,-360,360));
+//   outlist->Add(new TH1D("COMThetaAll","COMThetaAll",720,-360,360));
+//   outlist->Add(new TH1D("COMThetaAll_convert","COMThetaAll_convert",720,-360,360));
+//   
+//   outlist->Add(new TH1D("COMThetaHit","COMThetaHit",720,-360,360));
+//   outlist->Add(new TH1D("COMThetaHit_loop","COMThetaHit_loop",720,-360,360));
+//   outlist->Add(new TH1D("COMThetaHit_vec","COMThetaHit_vec",720,-360,360));
+//   
+//   outlist->Add(new TH1D("COMThetaHit_frac","COMThetaHit_frac",720,-360,360));
+//   outlist->Add(new TH1D("COMThetaHit_solid","COMThetaHit_solid",720,-360,360));
+//   outlist->Add(new TH1D("COMThetaHit_frac_solid","COMThetaHit_frac_solid",720,-360,360));
   
   cout<<"SetHistos End"<<endl;
 }
@@ -121,14 +123,14 @@ Bool_t AngSelector::Process(Long64_t entry)
   {
     TotalHits += Hits[i];
   }
-  TH1D* allptr = (TH1D*)outlist->FindObject(Form("COMThetaAll"));
-  allptr->Fill(BeThetaCOMMath);
-  allptr->Fill(Be8ThetaCOMMath);
-  
-  allptr = (TH1D*)outlist->FindObject(Form("COMThetaAll_convert"));
-  allptr->Fill(BeThetaCOMMath,1/(2.*TMath::Pi()*TMath::Sin(toRadians(BeThetaCOMMath))*toRadians(1)));
-  allptr->Fill(Be8ThetaCOMMath,1/(2.*TMath::Pi()*TMath::Sin(toRadians(Be8ThetaCOMMath))*toRadians(1)));
-  
+//   TH1D* allptr = (TH1D*)outlist->FindObject(Form("COMThetaAll"));
+//   allptr->Fill(BeThetaCOMMath);
+//   allptr->Fill(Be8ThetaCOMMath);
+//   
+//   allptr = (TH1D*)outlist->FindObject(Form("COMThetaAll_convert"));
+//   allptr->Fill(BeThetaCOMMath,1/(2.*TMath::Pi()*TMath::Sin(toRadians(BeThetaCOMMath))*toRadians(1)));
+//   allptr->Fill(Be8ThetaCOMMath,1/(2.*TMath::Pi()*TMath::Sin(toRadians(Be8ThetaCOMMath))*toRadians(1)));
+//   
   if(TotalHits == 0)
   {
 //     cout<<"Continue due to TotalHits == 0"<<endl;
@@ -151,9 +153,9 @@ Bool_t AngSelector::Process(Long64_t entry)
     }
   }
 
-  TH1D* hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit"));
-  hitptr->Fill(BeThetaCOMMath);
-  hitptr->Fill(Be8ThetaCOMMath);
+//   TH1D* hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit"));
+//   hitptr->Fill(BeThetaCOMMath);
+//   hitptr->Fill(Be8ThetaCOMMath);
 
   vector<HitStruct> HitsVec;
   
@@ -313,19 +315,19 @@ Bool_t AngSelector::Process(Long64_t entry)
 //     if(HitsVec.size() <2)
 //       continue;
     
-    TH1D* hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit_loop"));
-    hitptr->Fill(BeThetaCOMMath);
-    hitptr->Fill(Be8ThetaCOMMath);
-    hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit_vec"));
-    hitptr->Fill(HitsVec.at(iter).ThetaCOM);
-    hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit_frac"));
-    double frac = ManualFracCOM(HitsVec.at(iter).TotalExcite, toRadians(HitsVec.at(iter).ThetaCOM));
-    hitptr->Fill(HitsVec.at(iter).ThetaCOM,frac);
-    double solid = 1./GetSolidAngle(HitsVec.at(iter).StripX,HitsVec.at(iter).StripY);
-    hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit_solid"));
-    hitptr->Fill(HitsVec.at(iter).ThetaCOM,solid);
-    hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit_frac_solid"));
-    hitptr->Fill(HitsVec.at(iter).ThetaCOM,frac*solid);
+//     TH1D* hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit_loop"));
+//     hitptr->Fill(BeThetaCOMMath);
+//     hitptr->Fill(Be8ThetaCOMMath);
+//     hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit_vec"));
+//     hitptr->Fill(HitsVec.at(iter).ThetaCOM);
+//     hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit_frac"));
+//     double frac = ManualFracCOM(HitsVec.at(iter).TotalExcite, toRadians(HitsVec.at(iter).ThetaCOM));
+//     hitptr->Fill(HitsVec.at(iter).ThetaCOM,frac);
+//     double solid = 1./GetSolidAngle(HitsVec.at(iter).StripX,HitsVec.at(iter).StripY);
+//     hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit_solid"));
+//     hitptr->Fill(HitsVec.at(iter).ThetaCOM,solid);
+//     hitptr = (TH1D*)outlist->FindObject(Form("COMThetaHit_frac_solid"));
+//     hitptr->Fill(HitsVec.at(iter).ThetaCOM,frac*solid);
     
     int ringNo = RingNumber(HitsVec.at(iter).StripX, HitsVec.at(iter).StripY);
     int state = -1;
@@ -369,10 +371,15 @@ Bool_t AngSelector::Process(Long64_t entry)
 
     tmpPtr1D = (TH1D*)outlist->FindObject(Form("COMTheta_convert_s%02i_d%i_%s",state,HitsVec.at(iter).Detector,type.Data()));
     tmpPtr1D->Fill(HitsVec.at(iter).ThetaCOM,1./(2.*TMath::Pi()*TMath::Sin(toRadians(HitsVec.at(iter).ThetaCOM))*toRadians(1)));
-    
+        
     tmpPtr2D = (TH2D*)outlist->FindObject(Form("HitPattern_s%02i_d%i_%s",state,HitsVec.at(iter).Detector,type.Data()));
     tmpPtr2D->Fill(HitsVec.at(iter).StripX,HitsVec.at(iter).StripY);
     
+//     if(HitsVec.at(iter).PunchThrough)
+//     {
+//       tmpPtr2D = (TH2D*)outlist->FindObject(Form("PunchThrough_s%02i_d%i_%s",state,HitsVec.at(iter).Detector,type.Data()));
+//       tmpPtr2D->Fill(HitsVec.at(iter).StripX,HitsVec.at(iter).StripY);
+//     }
     tmpPtr2D = (TH2D*)outlist->FindObject(Form("RingVThetaCOM_s%02i_d%i_%s",state,HitsVec.at(iter).Detector,type.Data()));
     tmpPtr2D->Fill(HitsVec.at(iter).ThetaCOM,ringNo);
     
