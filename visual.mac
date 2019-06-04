@@ -50,6 +50,6 @@
 
 # Begin simulation
 #/run/beamOn 500
-/run/beamOn 500
+/run/beamOn 50
 
 
