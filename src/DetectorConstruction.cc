@@ -194,7 +194,8 @@ void DetectorConstruction::MakeDSSDNew(int detector, char pos)
   else if(detector==2 && pos == 'D')
   {
     Name="dER";
-    DetZ = 40.*um; 
+//     DetZ = 41.3338*um; 
+    DetZ = 34.8293*um; 
   }
   else if(detector==2 && pos == 'E')
   {
@@ -212,7 +213,8 @@ void DetectorConstruction::MakeDSSDNew(int detector, char pos)
   {
     Name="dEL";
     detTheta = -detTheta;
-    DetZ = 40.*um; 
+//     DetZ = 34.8293*um; 
+    DetZ = 41.3338*um; 
   }
   else if(detector==1 && pos == 'E')
   {
@@ -255,15 +257,15 @@ void DetectorConstruction::MakeDSSDNew(int detector, char pos)
 //   CenterOfDet.setZ(CenterOfDet.z()*factor);
   
   
-  cout<<"Position Checks for "<<Name<<endl;
-//   cout<<" Ancient XYZ: "<<Pos3->getX()<<", "<<Pos3->getY()<<", "<<Pos3->getZ()<<endl;
-  cout<<" Old XYZ: "<<CenterOfDet.getX()<<", "<<CenterOfDet.getY()<<", "<<CenterOfDet.getZ()<<endl;
-  cout<<" New XYZ: "<<CenterOfDetNew.getX()<<", "<<CenterOfDetNew.getY()<<", "<<CenterOfDetNew.getZ()<<endl;
-  
-//   cout<<" Ancient Theta,Phi,R: "<<Pos3->getTheta()<<", "<<Pos3->getPhi()<<", "<<Pos3->getR()<<endl;
-  cout<<" Old Theta,Phi,R: "<<CenterOfDet.getTheta()*180./3.14159<<", "<<CenterOfDet.getPhi()*180./3.14159<<", "<<CenterOfDet.getR()<<endl;
-  cout<<" New Theta,Phi,R: "<<CenterOfDetNew.getTheta()*180./3.14159<<", "<<CenterOfDetNew.getPhi()*180./3.14159<<", "<<CenterOfDetNew.getR()<<endl;
-  
+//   cout<<"Position Checks for "<<Name<<endl;
+// //   cout<<" Ancient XYZ: "<<Pos3->getX()<<", "<<Pos3->getY()<<", "<<Pos3->getZ()<<endl;
+//   cout<<" Old XYZ: "<<CenterOfDet.getX()<<", "<<CenterOfDet.getY()<<", "<<CenterOfDet.getZ()<<endl;
+//   cout<<" New XYZ: "<<CenterOfDetNew.getX()<<", "<<CenterOfDetNew.getY()<<", "<<CenterOfDetNew.getZ()<<endl;
+//   
+// //   cout<<" Ancient Theta,Phi,R: "<<Pos3->getTheta()<<", "<<Pos3->getPhi()<<", "<<Pos3->getR()<<endl;
+//   cout<<" Old Theta,Phi,R: "<<CenterOfDet.getTheta()*180./3.14159<<", "<<CenterOfDet.getPhi()*180./3.14159<<", "<<CenterOfDet.getR()<<endl;
+//   cout<<" New Theta,Phi,R: "<<CenterOfDetNew.getTheta()*180./3.14159<<", "<<CenterOfDetNew.getPhi()*180./3.14159<<", "<<CenterOfDetNew.getR()<<endl;
+//   
   G4RotationMatrix RMx;
   RMx.rotateY(detTheta);
   
@@ -336,6 +338,9 @@ G4ThreeVector DetectorConstruction::GetPosition(int detector,char pos, int horiz
     detTheta = -detTheta;
   if(pos=='E')
     verticalstrip=15-verticalstrip;
+  
+  if(detector == 1)
+    detTheta -= 2* (CLHEP::pi/180.);
   
   x = (50./32.)*(2*verticalstrip+1) - (50./16.)*8;
   y = (50./32.)*(2*horizontalstrip+1) - (50/16.)*8;
