@@ -26,6 +26,8 @@
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
+bool BadPixel(int detector, char pos, int XS, int YS);
+
 TFile *OutputFile;
 
 TTree *AnalysisTree;
