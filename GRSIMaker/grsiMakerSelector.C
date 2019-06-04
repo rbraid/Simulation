@@ -1,7 +1,6 @@
 #define grsiMakerSelector_cxx
 #include "grsiMakerSelector.h"
 
-
 void grsiMakerSelector::Begin(TTree * /*tree*/)
 {
   // The Begin() function is called at the start of the query.
@@ -33,9 +32,11 @@ Bool_t grsiMakerSelector::Process(Long64_t entry)
   bool DEBUGMaker = false;
   
   
-  if(entry%10000 == 0)
-    cout<<"Processed "<<entry<<" entries\r"<<endl;
-  
+  if(entry%50000 == 0)
+  {
+    cout<<"Processed "<<entry<<" entries\r";
+    fflush(stdout);
+  }
   if(DEBUGProcess)
     cout<<"Getting entry"<<endl;
   
@@ -61,6 +62,14 @@ Bool_t grsiMakerSelector::Process(Long64_t entry)
         Hits[detectoriter]--;
       }
     }
+  }
+  
+  for(int i=0;i<2;i++) // This loop swaps the x strip for the E detectors
+  {
+    if(XStrip[2][i] != -10)
+      XStrip[2][i] = 15-XStrip[2][i];
+    if(XStrip[4][i] != -10)
+      XStrip[4][i] = 15-XStrip[4][i];
   }
   
   if(DEBUGProcess) cout<<"Hits: ";
@@ -164,18 +173,24 @@ Bool_t grsiMakerSelector::Process(Long64_t entry)
     if(DEBUGMaker) cout<<" SetDVerticalStrip: "<<XStrip[3][0]<<endl;
     csmhit.SetDVerticalStrip(XStrip[3][0]);
     
-    if(DEBUGMaker)
-    {
-      TVector3 tmppos1 = csm->GetPosition(1,'D',YStrip[3][0],XStrip[3][0]);
-      TVector3 tmppos2 = csm->GetPosition(2,'D',YStrip[3][0],XStrip[3][0]);
-      
-      cout<<DRED<<"Debugging Positions."<<endl<<"Theta, Phi"<<endl;
-      cout<<"From GetPosition1: "<<tmppos1.Theta()*180./TMath::Pi()<<", "<<tmppos1.Phi()*180./TMath::Pi()<<endl;
-      cout<<"From GetPosition2: "<<tmppos2.Theta()*180./TMath::Pi()<<", "<<tmppos2.Phi()*180./TMath::Pi()<<endl;
-      
-      cout<<"From BeMath: "<<BeThetaMath<<", "<<BePhiMath<<endl;
-      cout<<"From Be8Math: "<<Be8ThetaMath<<", "<<Be8PhiMath<<RESET_COLOR<<endl;
-    }
+//     if(true)
+//     {
+//       TVector3 tmppos1 = csm->GetPosition(2,'D',YStrip[3][0],XStrip[3][0]);
+//       TVector3 tmppos2 = csm->GetPosition(2,'E',YStrip[3][0],XStrip[3][0]);
+//       TVector3 tmppos3 = csm->GetPosition(2,'E',YStrip[3][0],15-XStrip[3][0]);
+//       TVector3 tmppos4 = csm->GetPosition(2,'E',YStrip[3][0],16-XStrip[3][0]);
+//       
+//       
+//       cout<<"Debugging Positions."<<endl<<"Theta, Phi"<<endl;
+//       cout<<"From 2D: "<<tmppos1.Theta()*180./TMath::Pi()<<", "<<tmppos1.Phi()*180./TMath::Pi()<<endl;
+//       cout<<"From 2E: "<<tmppos2.Theta()*180./TMath::Pi()<<", "<<tmppos2.Phi()*180./TMath::Pi()<<endl;
+//       cout<<"From 2E xflip 15: "<<tmppos3.Theta()*180./TMath::Pi()<<", "<<tmppos2.Phi()*180./TMath::Pi()<<endl;
+//       cout<<"From 2E xflip 16: "<<tmppos4.Theta()*180./TMath::Pi()<<", "<<tmppos2.Phi()*180./TMath::Pi()<<endl;
+// 
+//       cout<<endl;
+// //       cout<<"From BeMath: "<<BeThetaMath<<", "<<BePhiMath<<endl;
+// //       cout<<"From Be8Math: "<<Be8ThetaMath<<", "<<Be8PhiMath<<RESET_COLOR<<endl;
+//     }
 
     csmhit.SetDPosition(csm->GetPosition(2,'D',YStrip[3][0],XStrip[3][0]));
     
@@ -183,9 +198,8 @@ Bool_t grsiMakerSelector::Process(Long64_t entry)
     csmhit.SetDHorizontalEnergy(Energy[3][0]*1000.);
     csmhit.SetDVerticalEnergy(Energy[3][0]*1000.);
     
-    if(Hits[4] == 1)
+    if(Hits[4] == 1 && !BadPixel(2,'E',XStrip[4][0],YStrip[4][0]))
     {
-      
       if(DEBUGMaker) cout<<" SetEHorizontalStrip: "<<YStrip[4][0]<<endl;
       csmhit.SetEHorizontalStrip(YStrip[4][0]);
       if(DEBUGMaker) cout<<" SetEVerticalStrip: "<<XStrip[4][0]<<endl;
@@ -241,4 +255,52 @@ void grsiMakerSelector::Terminate()
   cout<<endl<<"Terminate"<<endl;
 
   OutputFile->Write();  
+}
+
+bool BadPixel(int detector, char pos, int XS, int YS)
+{
+  bool bad = false;
+  pos = toupper(pos);
+  
+  if(detector !=2)
+  {
+    cerr<<"Bad Pixel not implemented for detector "<<detector<<endl;
+    return true;
+  }
+  
+  if(pos != 'E')
+  {
+    cerr<<"BadPixel not implemented for position "<<pos<<endl;
+    return true;
+  }
+  
+  bool trustHoriztonal = true;
+  switch(YS)
+  {
+    case 0:
+    case 2:
+    case 3:
+    case 6:
+    case 12:
+      trustHoriztonal = false;
+      break;
+  }
+  
+  bool trustVertical = true;
+  switch(XS)
+  {
+    case 0:
+      trustVertical = false;
+      break;
+  }
+  
+  if(!trustHoriztonal && !trustVertical)
+    bad = true;
+  
+  //overloading to kill bad strips too
+  if(YS == 1 || YS == 7)
+    bad = true;
+  
+  return bad;
+//   return false;
 }
